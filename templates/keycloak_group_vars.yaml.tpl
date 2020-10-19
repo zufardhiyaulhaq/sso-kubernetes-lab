@@ -1,5 +1,5 @@
 # Ansible configuration
-ansible_python_interpreter: /usr/local/bin/python3
+ansible_python_interpreter: /usr/bin/python3
 ansible_ssh_user: root
 
 # keycloak related variables
