@@ -1,0 +1,10 @@
+FROM envoyproxy/envoy:v1.15.2
+
+LABEL maintainer="Zufar Dhiyaulhaq"
+
+RUN apt-get update && apt-get -q install -y \
+    curl
+
+ENV ENVOY_UID=0
+
+CMD /usr/local/bin/envoy -c /etc/front-envoy.yaml --service-cluster front-proxy

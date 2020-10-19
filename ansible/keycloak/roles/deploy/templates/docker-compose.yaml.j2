@@ -1,0 +1,64 @@
+version: "2"
+services:
+
+  front-envoy:
+    build: /etc/docker-compose/envoy/
+    container_name: front-envoy
+    expose:
+      - "443"
+    ports:
+      - "{{ keycloak_public_ip }}:443:443"
+    networks:
+      infrastructure:
+        ipv4_address: 172.30.0.2
+    volumes:
+      - /etc/docker-compose/envoy/front-envoy.yaml:/etc/front-envoy.yaml
+      - /etc/keycloak-certificate/fullchain.pem:/etc/fullchain.pem
+      - /etc/keycloak-certificate/privkey.pem:/etc/privkey.pem
+
+  keycloak:
+    container_name: keycloak
+    depends_on:
+      - keycloack-postgres
+    expose:
+      - "8443"
+      - "8080"
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: 172.30.0.4
+      DB_DATABASE: keycloak
+      DB_USER: {{ keycloak_username }}
+      DB_SCHEMA: public
+      DB_PASSWORD: {{ keycloak_password }}
+      KEYCLOAK_USER: {{ keycloak_username }}
+      KEYCLOAK_PASSWORD: {{ keycloak_password }}
+    image: jboss/keycloak
+    networks:
+      infrastructure:
+        ipv4_address: 172.30.0.3
+    user: root
+
+  keycloack-postgres:
+    container_name: keycloak-postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: {{ keycloak_username }}
+      POSTGRES_PASSWORD: {{ keycloak_password }}
+    image: postgres
+    networks:
+      infrastructure:
+        ipv4_address: 172.30.0.4
+    volumes:
+      - keycloak_postgres:/var/lib/postgresql/data
+
+networks:
+  infrastructure:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 172.30.0.0/24
+         gateway: 172.30.0.1
+
+volumes:
+  keycloak_postgres:
+    driver: local

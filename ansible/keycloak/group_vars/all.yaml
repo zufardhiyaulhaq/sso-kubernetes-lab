@@ -1,9 +1,0 @@
-# Ansible configuration
-ansible_python_interpreter: /usr/bin/python3
-remote_user: root
-
-# keycloak related variables
-keycloak_domain:
-keycloak_username:
-keycloak_password:
-

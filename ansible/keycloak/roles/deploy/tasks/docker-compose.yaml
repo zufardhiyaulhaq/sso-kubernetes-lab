@@ -1,0 +1,23 @@
+---
+- name: create docker compose directory
+  file:
+    path: "{{ item.path }}"
+    state: directory
+  with_items:
+    - { path: '/etc/docker-compose/'}
+    - { path: '/etc/docker-compose/envoy'}
+
+- name: copy docker related template
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: 'docker-compose.yaml.j2', dest: '/etc/docker-compose/docker-compose.yaml' }
+    - { src: 'envoy-Dockerfile.j2', dest: '/etc/docker-compose/envoy/Dockerfile' }
+    - { src: 'envoy-front-envoy.yaml.j2', dest: '/etc/docker-compose/envoy/front-envoy.yaml' }
+
+- name: start docker compose
+  args:
+    chdir: "/etc/docker-compose/"
+  shell: |
+    docker-compose up --build -d

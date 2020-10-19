@@ -12,6 +12,11 @@ keycloak_vm_name = "sso-kubernetes-keycloak"
 keycloak_vm_region = "sgp1"
 keycloak_vm_size = "s-1vcpu-1gb"
 
+# Keycloak management
+keycloak_domain = ""
+keycloak_username = ""
+keycloak_password = ""
+
 # Kubernetes droplet VM information
 kubernetes_vm_images = "ubuntu-18-04-x64"
 kubernetes_vm_name = "sso-kubernetes-kubernetes"

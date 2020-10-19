@@ -1,0 +1,6 @@
+- name: deploy keycloak
+  become: yes
+  hosts: keycloak
+  roles:
+    - prepare
+    - deploy

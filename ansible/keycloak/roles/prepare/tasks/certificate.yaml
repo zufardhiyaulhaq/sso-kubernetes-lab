@@ -1,0 +1,15 @@
+---
+- name: create ca certificate directory
+  file:
+    path: "/etc/keycloak-certificate"
+    state: directory
+
+- name: copy certificate
+  copy:
+    src: fullchain.pem
+    dest: '/etc/keycloak-certificate/fullchain.pem'
+
+- name: copy certificate private key
+  copy:
+    src: privkey.pem
+    dest: '/etc/keycloak-certificate/privkey.pem'
