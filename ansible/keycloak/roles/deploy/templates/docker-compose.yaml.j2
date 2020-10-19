@@ -32,6 +32,7 @@ services:
       DB_PASSWORD: {{ keycloak_password }}
       KEYCLOAK_USER: {{ keycloak_username }}
       KEYCLOAK_PASSWORD: {{ keycloak_password }}
+      PROXY_ADDRESS_FORWARDING: "true"
     image: jboss/keycloak
     networks:
       infrastructure:
