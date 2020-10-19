@@ -45,7 +45,6 @@ static_resources:
     connect_timeout: 15s
     type: strict_dns
     http_protocol_options: {}
-    tls_context: {}
     load_assignment:
       cluster_name: keycloak-backend
       endpoints:
@@ -53,8 +52,8 @@ static_resources:
         - endpoint:
             address:
               socket_address:
-                address: 172.30.0.4
-                port_value: 8443
+                address: 172.30.0.3
+                port_value: 8080
   
 admin:
   access_log_path: "/dev/null"
