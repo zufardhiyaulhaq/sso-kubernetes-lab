@@ -4,12 +4,12 @@ resource "digitalocean_ssh_key" "public_key" {
 }
 
 resource "digitalocean_droplet" "keycloak" {
-  image  = var.keycloak_vm_image
+  image  = var.keycloak_vm_images
   name   = var.keycloak_vm_name
   region = var.keycloak_vm_region
   size   = var.keycloak_vm_size
   ssh_keys = [
-    [digitalocean_ssh_key.public_key.fingerprint]
+    digitalocean_ssh_key.public_key.fingerprint
   ]
 }
 
@@ -32,7 +32,7 @@ data "template_file" "keycloak_hosts" {
 
 resource "local_file" "keycloak_group_vars" {
   content  = "${data.template_file.keycloak_group_vars.rendered}"
-  filename = "ansible/keycloak/group_vars/all.yml"
+  filename = "ansible/keycloak/group_vars/all.yaml"
 }
 
 resource "local_file" "keycloak_hosts" {
@@ -41,11 +41,11 @@ resource "local_file" "keycloak_hosts" {
 }
 
 resource "digitalocean_droplet" "kubernetes" {
-  image  = var.kubernetes_vm_image
+  image  = var.kubernetes_vm_images
   name   = var.kubernetes_vm_name
   region = var.kubernetes_vm_region
   size   = var.kubernetes_vm_size
   ssh_keys = [
-    [digitalocean_ssh_key.public_key.fingerprint]
+    digitalocean_ssh_key.public_key.fingerprint
   ]
 }
