@@ -36,6 +36,49 @@ ansible-playbook deploy.yaml -i hosts/hosts
 ```
 
 ### Keycloak Configuration
+- Create a new realm name `IAM`.
+    - In the left menu, `master` > `add realm`.
+    - fill the name with `IAM`.
+    - click `create` button.
+- Create groups `kubernetes-admin` and `kubernetes-viewer`.
+    - In the left menu, select the proper IAM, go to `manage` > `groups`.
+    - click `new` button.
+- Create user `admin-user` assigned to group `kubernetes-admin` and `read-only-user` assigned to group `kubernetes-viewer`.
+    - In the left menu, select the proper IAM, go to `manage` > `users`
+    - click `add user` button.
+    - add the specific username.
+    - click `save` button.
+    - you will redirected to the specific user pages, go to `groups`.
+    - join the specific groups to the user.
+    - go to `credentials`, fill the password and turn off temporary flag. click `set password`.
+- Add client `kubernetes`.
+    - In the left menu, select the proper IAM, go to `configure` > `clients`.
+    - click button `create`.
+    - fill `client ID` with `kubernetes`.
+    - click button `save`.
+- modify client `kubernetes` configuration.
+    - In the left menu, select the proper IAM, go to `configure` > `clients`.
+    - select `kubernetes` client, go to `settings` tab.
+
+| option | value |
+| - | - |
+| Access type | confidential |
+| Valid Redirect URIs | * |
+
+- create protocol mapper called `user_groups` in client `kubernetes`,
+    - In the left menu, select the proper IAM, go to `configure` > `clients`.
+    - select `kubernetes` client, go to `mappers` tab.
+
+| option | value |
+| - | - |
+| name | user_groups |
+| mapper_type | Group Membership |
+| Token Claim Name | user_groups |
+
+- take a note for client `kubernetes`
+    - In the left menu, select the proper IAM, go to `configure` > `clients`.
+    - select `kubernetes` client, go to `credentials` tab.
+    - copy the secret
 
 ### Setup Kubernetes
 Kubernetes configure using minikube with `none` provider. It will automatically configure the API server for OIDC with this following specification:
@@ -60,7 +103,7 @@ after you run the ansible, you will get OIDC kubeconfig in `/tmp/client-oidc.kub
 kubectl krew install oidc-login
 ```
 - open and edit `/tmp/client-oidc.kubeconfig`
-add this following configuration
+add this following configuration. `keycloak_client_secret` is the secret from `kubernetes` client in Keycloak.
 ```
 contexts:
 - context:
@@ -81,4 +124,9 @@ users:
       - --oidc-client-secret={{ keycloak_client_secret }}
       command: kubectl
       env: null
+```
+- using kubeconfig
+You will be redirected to the keycloak page for login. Use user that already created like `admin-user` or `read-only-user`.
+```
+KUBECONFIG=/tmp/client-oidc.kubeconfig kubectl get nodes
 ```
