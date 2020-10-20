@@ -34,3 +34,18 @@ keycloak will be running on docker-compose front with Envoy.
 cd ansible/keycloak/
 ansible-playbook deploy.yaml -i hosts/hosts
 ```
+
+### Setup Kubernetes
+Kubernetes configure using minikube with `none` provider. It will automatically configure the API server for OIDC with this following specification:
+- oidc-username-prefix=oidc:
+- oidc-groups-prefix=oidc:
+- oidc-client-id=kubernetes
+- oidc-username-claim=preferred_username
+- oidc-groups-claim=user_groups
+- oidc-issuer-url=https://{{ keycloak_domain_defined_in_variables.tfvars }}/auth/realms/IAM
+
+Run the ansible
+```
+cd ansible/kubernetes/
+ansible-playbook deploy.yaml -i hosts/hosts
+```

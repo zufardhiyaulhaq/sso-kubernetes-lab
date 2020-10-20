@@ -49,3 +49,28 @@ resource "digitalocean_droplet" "kubernetes" {
     digitalocean_ssh_key.public_key.fingerprint
   ]
 }
+
+data "template_file" "kubernetes_group_vars" {
+  template = "${file("./templates/kubernetes_group_vars.yaml.tpl")}"
+  vars = {
+    kubernetes_public_ip = digitalocean_droplet.kubernetes.ipv4_address
+    oidc_domain = var.keycloak_domain
+  }
+}
+
+data "template_file" "kubernetes_hosts" {
+  template = "${file("./templates/kubernetes_hosts.tpl")}"
+  vars = {
+    kubernetes_public_ip = digitalocean_droplet.kubernetes.ipv4_address
+  }
+}
+
+resource "local_file" "kubernetes_group_vars" {
+  content  = "${data.template_file.kubernetes_group_vars.rendered}"
+  filename = "ansible/kubernetes/group_vars/all.yaml"
+}
+
+resource "local_file" "kubernetes_hosts" {
+  content  = "${data.template_file.kubernetes_hosts.rendered}"
+  filename = "ansible/kubernetes/hosts/hosts"
+}

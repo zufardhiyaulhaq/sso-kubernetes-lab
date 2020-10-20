@@ -1,0 +1,6 @@
+- name: deploy Kubernetes
+  become: yes
+  hosts: kubernetes
+  roles:
+    - prepare
+    - deploy

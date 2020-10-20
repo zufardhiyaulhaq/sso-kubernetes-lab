@@ -1,0 +1,42 @@
+---
+- name: start Kubernetes
+  args:
+    chdir: "/root/"
+  shell: |
+    minikube start --driver=none --kubernetes-version=v1.18.7 \
+    --extra-config="apiserver.oidc-username-prefix=oidc:" \
+    --extra-config="apiserver.oidc-groups-prefix=oidc:" \
+    --extra-config="apiserver.authorization-mode=Node,RBAC" \
+    --extra-config="apiserver.oidc-issuer-url=https://{{ keycloak_domain }}/auth/realms/IAM" \
+    --extra-config="apiserver.oidc-client-id=kubernetes" \
+    --extra-config="apiserver.oidc-username-claim=preferred_username" \
+    --extra-config="apiserver.oidc-groups-claim=user_groups" \
+    --apiserver-ips={{ kubernetes_public_ip }}
+
+- name: copy RBAC template
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: 'rbac.yaml.j2', dest: '/root/rbac.yaml' }
+
+- name: apply RBAC
+  args:
+    chdir: "/root/"
+  shell: |
+    kubectl apply -f /root/rbac.yaml
+
+- name: create kubeconfig OIDC
+  args:
+    chdir: "/root/"   
+  shell: |
+        kubectl config set-cluster sso-kubernetes \
+        --certificate-authority= \
+        --embed-certs=true \
+        --server=https://{{ kubernetes_public_ip }}:6443 \
+        --kubeconfig=client-oidc.kubeconfig
+
+- name: get OIDC kubeconfig
+  fetch:
+    src: /root/client-oidc.kubeconfig
+    dest: /tmp/client-oidc.kubeconfig
