@@ -35,6 +35,8 @@ cd ansible/keycloak/
 ansible-playbook deploy.yaml -i hosts/hosts
 ```
 
+### Keycloak Configuration
+
 ### Setup Kubernetes
 Kubernetes configure using minikube with `none` provider. It will automatically configure the API server for OIDC with this following specification:
 - oidc-username-prefix=oidc:
@@ -42,10 +44,41 @@ Kubernetes configure using minikube with `none` provider. It will automatically 
 - oidc-client-id=kubernetes
 - oidc-username-claim=preferred_username
 - oidc-groups-claim=user_groups
-- oidc-issuer-url=https://{{ keycloak_domain_defined_in_variables.tfvars }}/auth/realms/IAM
+- oidc-issuer-url=https://{{ keycloak_domain }}/auth/realms/IAM
 
 Run the ansible
 ```
 cd ansible/kubernetes/
 ansible-playbook deploy.yaml -i hosts/hosts
+```
+
+after you run the ansible, you will get OIDC kubeconfig in `/tmp/client-oidc.kubeconfig`. Use this kubeconfig to connect to your cluster/
+
+### Setup OIDC Kubeconfig
+- Install kubelogin
+```
+kubectl krew install oidc-login
+```
+- open and edit `/tmp/client-oidc.kubeconfig`
+add this following configuration
+```
+contexts:
+- context:
+    cluster: sso-kubernetes
+    user: oidc
+  name: sso-kubernetes
+current-context: sso-kubernetes
+users:
+- name: oidc
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1beta1
+      args:
+      - oidc-login
+      - get-token
+      - --oidc-issuer-url=https://{{ keycloak_domain }}/auth/realms/IAM
+      - --oidc-client-id=kubernetes
+      - --oidc-client-secret={{ keycloak_client_secret }}
+      command: kubectl
+      env: null
 ```

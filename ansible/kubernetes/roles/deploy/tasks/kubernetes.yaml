@@ -7,7 +7,7 @@
     --extra-config="apiserver.oidc-username-prefix=oidc:" \
     --extra-config="apiserver.oidc-groups-prefix=oidc:" \
     --extra-config="apiserver.authorization-mode=Node,RBAC" \
-    --extra-config="apiserver.oidc-issuer-url=https://{{ keycloak_domain }}/auth/realms/IAM" \
+    --extra-config="apiserver.oidc-issuer-url=https://{{ oidc_domain }}/auth/realms/IAM" \
     --extra-config="apiserver.oidc-client-id=kubernetes" \
     --extra-config="apiserver.oidc-username-claim=preferred_username" \
     --extra-config="apiserver.oidc-groups-claim=user_groups" \
@@ -31,7 +31,7 @@
     chdir: "/root/"   
   shell: |
         kubectl config set-cluster sso-kubernetes \
-        --certificate-authority= \
+        --certificate-authority=/root/.minikube/ca.crt \
         --embed-certs=true \
         --server=https://{{ kubernetes_public_ip }}:6443 \
         --kubeconfig=client-oidc.kubeconfig
@@ -40,3 +40,4 @@
   fetch:
     src: /root/client-oidc.kubeconfig
     dest: /tmp/client-oidc.kubeconfig
+    flat: true

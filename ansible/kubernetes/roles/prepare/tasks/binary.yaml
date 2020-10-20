@@ -3,14 +3,12 @@
   get_url:
     url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
     dest: /usr/local/bin/minikube
-    remote_src: yes
     mode: a+x
 
 - name: Download kubectl
   get_url:
     url: https://storage.googleapis.com/kubernetes-release/release/v1.18.2/bin/linux/amd64/kubectl
     dest: /usr/local/bin/kubectl
-    remote_src: yes
     mode: a+x
 
 - name: Disable SWAP in fstab
