@@ -33,7 +33,7 @@
         kubectl config set-cluster sso-kubernetes \
         --certificate-authority=/root/.minikube/ca.crt \
         --embed-certs=true \
-        --server=https://{{ kubernetes_public_ip }}:6443 \
+        --server=https://{{ kubernetes_public_ip }}:8443 \
         --kubeconfig=client-oidc.kubeconfig
 
 - name: get OIDC kubeconfig
