@@ -10,7 +10,7 @@ do_ssh_key = ""
 keycloak_vm_images = "ubuntu-18-04-x64"
 keycloak_vm_name = "sso-kubernetes-keycloak"
 keycloak_vm_region = "sgp1"
-keycloak_vm_size = "s-4vcpu-8gb"
+keycloak_vm_size = "s-2vcpu-2gb"
 
 # Keycloak management
 keycloak_domain = ""
